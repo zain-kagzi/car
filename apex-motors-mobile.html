@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>APEX MOTORS — Choose the Best Car</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Exo+2:ital,wght@0,100;0,300;0,400;0,600;0,800;1,300&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#06090f;--bg2:#0b0f1a;--card:#0f1420;--card2:#131825;
+  --blue:#3b82f6;--cyan:#06b6d4;--green:#22c55e;
+  --border:rgba(59,130,246,0.15);--text:#e2e8f0;--muted:#64748b;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Exo 2',sans-serif;overflow-x:hidden;}
+h1,h2,h3,h4,h5{font-family:'Rajdhani',sans-serif;font-weight:700;}
+
+/* HIDE DESKTOP CURSOR ON TOUCH */
+@media(pointer:fine){
+  body{cursor:none;}
+  #cur,#cur2{display:block;}
+}
+@media(pointer:coarse){
+  #cur,#cur2{display:none;}
+  body{cursor:auto;}
+  .btn-blue,.btn-outline,.brand-btn,.tab-btn,.car-card,.nav-link,.nav-mobile-link{cursor:pointer;}
+  input,textarea,select,button,a{cursor:pointer;}
+}
+
+#cur{width:10px;height:10px;background:var(--blue);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .15s,height .15s;}
+#cur2{width:32px;height:32px;border:1px solid rgba(59,130,246,.5);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all .12s ease;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(6,9,15,.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);}
+.nav-link{font-family:'Rajdhani',sans-serif;font-weight:600;letter-spacing:.08em;font-size:1rem;color:var(--muted);transition:color .2s;}
+.nav-link:hover,.nav-link.active{color:#fff;}
+.nav-link.active{border-bottom:2px solid var(--blue);padding-bottom:2px;}
+
+/* MOBILE MENU */
+.mobile-menu{
+  position:fixed;top:0;left:0;right:0;bottom:0;z-index:300;
+  background:rgba(6,9,15,.98);backdrop-filter:blur(20px);
+  display:flex;flex-direction:column;justify-content:center;align-items:center;gap:2rem;
+  transform:translateX(-100%);transition:transform .35s cubic-bezier(.4,0,.2,1);
+}
+.mobile-menu.open{transform:translateX(0);}
+.nav-mobile-link{
+  font-family:'Rajdhani',sans-serif;font-weight:700;font-size:2.5rem;
+  letter-spacing:.08em;color:var(--muted);transition:color .2s;text-align:center;
+}
+.nav-mobile-link:hover,.nav-mobile-link.active{color:#fff;}
+.hamburger{width:28px;height:20px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;z-index:400;position:relative;}
+.hamburger span{display:block;height:2px;background:#fff;border-radius:2px;transition:all .3s ease;}
+.hamburger.open span:nth-child(1){transform:translateY(9px) rotate(45deg);}
+.hamburger.open span:nth-child(2){opacity:0;}
+.hamburger.open span:nth-child(3){transform:translateY(-9px) rotate(-45deg);}
+
+/* PAGE */
+.page{display:none;}
+.page.active{display:block;}
+
+/* HERO */
+.hero{
+  min-height:100svh;
+  background:radial-gradient(ellipse at 50% 0%,rgba(59,130,246,.12) 0%,transparent 60%),
+             radial-gradient(ellipse at 80% 80%,rgba(6,182,212,.06) 0%,transparent 50%),var(--bg);
+  position:relative;overflow:hidden;display:flex;align-items:center;
+}
+.grid-bg{
+  position:absolute;inset:0;
+  background-image:linear-gradient(rgba(59,130,246,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(59,130,246,.04) 1px,transparent 1px);
+  background-size:60px 60px;
+  mask-image:radial-gradient(ellipse at center,black 30%,transparent 80%);
+}
+
+/* STAT PILL */
+.stat-pill{
+  background:rgba(255,255,255,.04);border:1px solid var(--border);
+  border-radius:999px;padding:.45rem 1rem;
+  display:inline-flex;align-items:center;gap:.4rem;
+}
+
+/* CARDS */
+.car-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:12px;overflow:hidden;transition:all .3s ease;
+}
+@media(hover:hover){
+  .car-card:hover{border-color:rgba(59,130,246,.5);transform:translateY(-6px);box-shadow:0 20px 60px rgba(59,130,246,.12);}
+}
+.badge{
+  background:linear-gradient(135deg,rgba(59,130,246,.2),rgba(6,182,212,.1));
+  border:1px solid rgba(59,130,246,.3);border-radius:6px;
+  font-size:.65rem;letter-spacing:.1em;padding:3px 8px;color:var(--cyan);
+  font-family:'Rajdhani',sans-serif;font-weight:600;white-space:nowrap;
+}
+.btn-blue{
+  background:linear-gradient(135deg,#3b82f6,#06b6d4);color:#fff;
+  font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:.08em;font-size:1rem;
+  padding:.6rem 1.6rem;border-radius:8px;border:none;transition:opacity .2s,transform .15s;
+  display:inline-flex;align-items:center;gap:.5rem;white-space:nowrap;
+}
+.btn-blue:active{opacity:.85;transform:scale(.98);}
+.btn-outline{
+  background:transparent;color:var(--blue);
+  font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:.08em;font-size:1rem;
+  padding:.6rem 1.6rem;border-radius:8px;border:1px solid rgba(59,130,246,.4);transition:all .2s;
+  display:inline-flex;align-items:center;gap:.5rem;white-space:nowrap;
+}
+.btn-outline:active{background:rgba(59,130,246,.1);}
+
+.sec-label{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;color:var(--cyan);}
+
+/* FILTER PILLS */
+.brand-btn{
+  background:var(--card);border:1px solid var(--border);border-radius:8px;
+  padding:.45rem 1rem;font-family:'Rajdhani',sans-serif;font-weight:600;
+  color:var(--muted);transition:all .2s;font-size:.85rem;white-space:nowrap;
+}
+.brand-btn.active,.brand-btn:hover{border-color:var(--blue);color:#fff;background:rgba(59,130,246,.1);}
+
+/* FEATURE RING */
+.feature-ring{
+  width:min(300px,80vw);height:min(300px,80vw);border-radius:50%;
+  border:1px solid rgba(59,130,246,.15);position:relative;
+  display:flex;align-items:center;justify-content:center;margin:0 auto;
+}
+.feature-ring::before{content:'';position:absolute;width:72%;height:72%;border-radius:50%;border:1px solid rgba(59,130,246,.1);}
+.feature-ring::after{content:'';position:absolute;width:50%;height:50%;border-radius:50%;border:1px solid rgba(59,130,246,.2);}
+.f-dot{position:absolute;width:10px;height:10px;border-radius:50%;background:var(--blue);box-shadow:0 0 10px var(--blue);}
+
+/* SPEC BAR */
+.spec-bar{height:4px;border-radius:2px;background:rgba(255,255,255,.05);}
+.spec-fill{height:4px;border-radius:2px;background:linear-gradient(to right,var(--blue),var(--cyan));transition:width .8s ease;}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease;}
+.reveal.vis{opacity:1;transform:none;}
+
+/* TIMELINE */
+.tl-line{position:absolute;left:20px;top:0;bottom:0;width:1px;background:var(--border);}
+.tl-dot{width:14px;height:14px;border-radius:50%;background:var(--blue);border:2px solid rgba(59,130,246,.3);box-shadow:0 0 12px var(--blue);flex-shrink:0;}
+
+/* FORM */
+input,textarea,select{
+  background:rgba(255,255,255,.03);border:1px solid var(--border);color:var(--text);
+  padding:.75rem 1rem;border-radius:8px;font-family:'Exo 2',sans-serif;
+  transition:border-color .2s;width:100%;font-size:16px;/* prevent iOS zoom */
+}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--blue);}
+select option{background:var(--card);}
+
+.tab-btn{
+  font-family:'Rajdhani',sans-serif;font-weight:600;letter-spacing:.06em;
+  padding:.5rem 1rem;border-radius:8px;transition:all .2s;color:var(--muted);
+  font-size:.85rem;white-space:nowrap;
+}
+.tab-btn.active{background:rgba(59,130,246,.15);color:#fff;border-bottom:2px solid var(--blue);}
+
+.news-card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:all .3s;}
+@media(hover:hover){.news-card:hover{border-color:rgba(59,130,246,.4);transform:translateY(-4px);}}
+
+@keyframes marquee{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+.marquee-track{display:flex;animation:marquee 20s linear infinite;}
+
+#scrollTop{
+  position:fixed;bottom:1.5rem;right:1.5rem;z-index:300;
+  width:42px;height:42px;background:linear-gradient(135deg,var(--blue),var(--cyan));
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  opacity:0;transition:opacity .3s;box-shadow:0 0 20px rgba(59,130,246,.4);
+}
+
+.notif{
+  position:fixed;top:5rem;right:1rem;left:1rem;z-index:400;
+  background:var(--card);border:1px solid rgba(34,197,94,.3);
+  border-radius:10px;padding:.875rem 1.25rem;
+  transform:translateY(-120%);transition:transform .4s ease;
+}
+@media(min-width:480px){.notif{left:auto;max-width:300px;}}
+.notif.show{transform:translateY(0);}
+
+footer{background:#040609;border-top:1px solid var(--border);}
+
+/* SCROLL FILTER ROW */
+.filter-scroll{display:flex;gap:.5rem;overflow-x:auto;padding-bottom:.5rem;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.filter-scroll::-webkit-scrollbar{display:none;}
+
+@keyframes pulse{0%,100%{box-shadow:0 0 20px rgba(59,130,246,.4);}50%{box-shadow:0 0 40px rgba(59,130,246,.7);}}
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+<div id="cur2"></div>
+
+
+
+<!-- SCROLL TOP -->
+<div id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="18,15 12,9 6,15"/></svg>
+</div>
+
+<!-- MOBILE MENU OVERLAY -->
+<div class="mobile-menu" id="mobileMenu">
+  <div class="absolute top-5 right-5">
+    <div class="hamburger open" id="menuCloseBtn" onclick="closeMobileMenu()">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+  <a class="nav-mobile-link text-base" id="mnav-home" onclick="showPage('home');closeMobileMenu()">HOME</a>
+  <a class="nav-mobile-link text-base" id="mnav-about" onclick="showPage('about');closeMobileMenu()">ABOUT</a>
+  <a class="nav-mobile-link text-base" id="mnav-popular" onclick="showPage('popular');closeMobileMenu()">POPULAR</a>
+  <a class="nav-mobile-link text-base" id="mnav-featured" onclick="showPage('featured');closeMobileMenu()">FEATURED</a>
+  <a class="nav-mobile-link text-base" id="mnav-blog" onclick="showPage('blog');closeMobileMenu()">BLOG</a>
+  <a class="nav-mobile-link text-base" id="mnav-contact" onclick="showPage('contact');closeMobileMenu()">CONTACT</a>
+  <button class="btn-blue mt-4" onclick="showPage('contact');closeMobileMenu()">Get Quote</button>
+</div>
+
+<!-- NAV -->
+<nav class="px-4 md:px-12 py-4">
+  <div class="max-w-7xl mx-auto flex items-center justify-between">
+    <!-- Logo -->
+    <div class="flex items-center gap-2" onclick="showPage('home')" style="cursor:pointer;">
+      <svg width="28" height="28" viewBox="0 0 32 32"><polygon points="16,3 29,27 3,27" fill="none" stroke="#3b82f6" stroke-width="2"/><polygon points="16,9 24,24 8,24" fill="#3b82f6" opacity=".3"/></svg>
+      <span style="font-family:'Rajdhani',sans-serif;font-size:1.25rem;font-weight:700;letter-spacing:.08em;color:white;">APEX<span style="color:#3b82f6;">MOTORS</span></span>
+    </div>
+    <!-- Desktop nav -->
+    <div class="hidden md:flex items-center gap-6">
+      <a class="nav-link active" id="nav-home" onclick="showPage('home')">Home</a>
+      <a class="nav-link" id="nav-about" onclick="showPage('about')">About</a>
+      <a class="nav-link" id="nav-popular" onclick="showPage('popular')">Popular</a>
+      <a class="nav-link" id="nav-featured" onclick="showPage('featured')">Featured</a>
+      <a class="nav-link" id="nav-blog" onclick="showPage('blog')">Blog</a>
+      <a class="nav-link" id="nav-contact" onclick="showPage('contact')">Contact</a>
+    </div>
+    <!-- Desktop right -->
+    <div class="hidden md:flex items-center gap-3">
+      <button class="btn-outline text-sm py-2 px-3" onclick="showPage('featured')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        Wishlist <span class="ml-1 bg-blue-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center" id="wishlist-count">0</span>
+      </button>
+      <button class="btn-blue text-sm py-2 px-4" onclick="showPage('contact')">Get Quote</button>
+    </div>
+    <!-- Mobile right: wishlist + hamburger -->
+    <div class="flex md:hidden items-center gap-3">
+      <button onclick="showPage('featured')" class="relative p-2">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        <span class="absolute -top-1 -right-1 bg-blue-500 text-white rounded-full w-4 h-4 text-xs flex items-center justify-center" id="wishlist-count-m">0</span>
+      </button>
+      <div class="hamburger" id="hamburger" onclick="openMobileMenu()"><span></span><span></span><span></span></div>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════ HOME PAGE ═══════════════════════════════ -->
+<div id="page-home" class="page active">
+
+  <!-- HERO -->
+  <section class="hero pt-16">
+    <div class="grid-bg"></div>
+    <div class="relative z-10 px-4 md:px-12 max-w-7xl mx-auto w-full py-12 md:py-20">
+      <div class="max-w-lg">
+        <div class="sec-label mb-3">NEXT GEN PERFORMANCE</div>
+        <h1 style="font-size:clamp(2.8rem,10vw,6rem);line-height:.95;color:white;">
+          Choose the<br/><span style="color:#3b82f6;">Best Car</span><br/>For You
+        </h1>
+        <p class="mt-4 text-gray-400 text-base leading-relaxed max-w-sm">
+          Explore our curated lineup of high-performance machines — from electric torque monsters to track-bred supercars.
+        </p>
+        <div class="flex flex-wrap gap-3 mt-6">
+          <button class="btn-blue" onclick="showPage('popular')">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            Explore Cars
+          </button>
+          <button class="btn-outline" onclick="showPage('about')">Watch Demo ▶</button>
+        </div>
+        <!-- Stats row — scrollable on mobile -->
+        <div class="flex gap-2 mt-6 overflow-x-auto pb-2 -mx-1 px-1" style="-webkit-overflow-scrolling:touch;scrollbar-width:none;">
+          <div class="stat-pill flex-shrink-0">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            <span class="text-white text-xs" style="font-family:'Rajdhani',sans-serif;font-weight:600;">600Nm <span class="text-gray-500 font-normal">Torque</span></span>
+          </div>
+          <div class="stat-pill flex-shrink-0">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+            <span class="text-white text-xs" style="font-family:'Rajdhani',sans-serif;font-weight:600;">2.9s <span class="text-gray-500 font-normal">0-100</span></span>
+          </div>
+          <div class="stat-pill flex-shrink-0">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
+            <span class="text-white text-xs" style="font-family:'Rajdhani',sans-serif;font-weight:600;">520km <span class="text-gray-500 font-normal">Range</span></span>
+          </div>
+        </div>
+      </div>
+      <!-- Hero car — hidden on small screens, shown on md+ -->
+      <div class="hidden md:block absolute right-0 bottom-0 w-1/2 max-w-3xl">
+  <img 
+    src="https://images.unsplash.com/photo-1503376780353-7e6692767b70"
+    alt="Car"
+    class="w-full h-auto object-contain"
+    style="filter:drop-shadow(0 0 60px rgba(59,130,246,.25)); transition: transform 0.5s ease;"
+    onmouseover="this.style.transform='scale(1.05)'"
+    onmouseout="this.style.transform='scale(1)'"
+  />
+</div>
+      <!-- Mobile hero car (smaller, inline) -->
+      <div class="md:hidden mt-6 opacity-80">
+  <img 
+    src="https://images.unsplash.com/photo-1493238792000-8113da705763"
+    alt="Car"
+    class="w-full h-auto object-contain"
+    style="filter:drop-shadow(0 0 30px rgba(59,130,246,.2)); transition: transform 0.5s ease;"
+    onmouseover="this.style.transform='scale(1.05)'"
+    onmouseout="this.style.transform='scale(1)'"
+  />
+</div>
+      <!-- Start button -->
+      <div class="mt-6 md:mt-0 md:absolute md:bottom-10 md:left-1/2 md:-translate-x-1/2 flex flex-col items-center gap-2">
+        <div onclick="document.getElementById('home-brands').scrollIntoView({behavior:'smooth'})"
+          style="width:56px;height:56px;border-radius:50%;border:2px solid #3b82f6;display:flex;align-items:center;justify-content:center;box-shadow:0 0 20px rgba(59,130,246,.4);animation:pulse 2s ease-in-out infinite;cursor:pointer;">
+          <span style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.75rem;letter-spacing:.1em;color:#3b82f6;">START</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BRAND MARQUEE -->
+  <div class="py-4 border-y border-blue-500/10 overflow-hidden" style="background:var(--bg2);">
+    <div class="marquee-track">
+      <span class="mx-8 text-gray-600 font-bold text-base" style="font-family:'Rajdhani',sans-serif;">PORSCHE</span>
+      <span class="mx-8 text-gray-600 font-bold text-base" style="font-family:'Rajdhani',sans-serif;">TESLA</span>
+      <span class="mx-8 text-gray-600 font-bold text-base" style="font-family:'Rajdhani',sans-serif;">BMW</span>
+      <span class="mx-8 text-gray-600 font-bold text-base" style="font-family:'Rajdhani',sans-serif;">LAMBORGHINI</span>
+      <span class="mx-8 text-gray-600 font-bold text-base" style="font-family:'Rajdhani',sans-serif;">FERRARI</span>
+      <span class="mx-8 text-gray-600 font-bold text-base" style="font-family:'Rajdhani',sans-serif;">AUDI</span>
+      <span class="mx-8 text-gray-600 font-bold text-base" style="font-family:'Rajdhani',sans-serif;">MERCEDES</span>
+      <span class="mx-8 text-gray-600 font-bold text-base" style="font-family:'Rajdhani',sans-serif;">MCLAREN</span>
+      <span class="mx-8 text-gray-600 font-bold text-base" style="font-family:'Rajdhani',sans-serif;">PORSCHE</span>
+      <span class="mx-8 text-gray-600 font-bold text-base" style="font-family:'Rajdhani',sans-serif;">TESLA</span>
+      <span class="mx-8 text-gray-600 font-bold text-base" style="font-family:'Rajdhani',sans-serif;">BMW</span>
+      <span class="mx-8 text-gray-600 font-bold text-base" style="font-family:'Rajdhani',sans-serif;">LAMBORGHINI</span>
+      <span class="mx-8 text-gray-600 font-bold text-base" style="font-family:'Rajdhani',sans-serif;">FERRARI</span>
+      <span class="mx-8 text-gray-600 font-bold text-base" style="font-family:'Rajdhani',sans-serif;">AUDI</span>
+      <span class="mx-8 text-gray-600 font-bold text-base" style="font-family:'Rajdhani',sans-serif;">MERCEDES</span>
+      <span class="mx-8 text-gray-600 font-bold text-base" style="font-family:'Rajdhani',sans-serif;">MCLAREN</span>
+    </div>
+  </div>
+
+  <!-- CHOOSE BY BRAND -->
+  <section class="py-16 md:py-24 px-4 md:px-12" id="home-brands">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-10 reveal">
+        <div class="sec-label mb-2">DISCOVER</div>
+        <h2 class="text-4xl md:text-5xl text-white">Choose Your Car<br/>Of Different Brand</h2>
+      </div>
+      <div id="home-cars-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"></div>
+      <div class="text-center mt-8"><button class="btn-outline" onclick="showPage('popular')">View All Cars →</button></div>
+    </div>
+  </section>
+
+  <!-- MACHINES SECTION -->
+  <section class="py-16 md:py-24 px-4 md:px-12" style="background:var(--bg2);">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+      <div class="reveal">
+        <div class="rounded-2xl overflow-hidden border border-blue-500/20 relative flex items-center justify-center h-[280px] md:h-[340px]"
+     style="background:linear-gradient(135deg,#0d1626,#0f1a2e);">
+          <div class="rounded-2xl overflow-hidden border border-blue-500/20 relative flex items-center justify-center h-[280px] md:h-[340px]"
+     style="background:linear-gradient(135deg,#0d1626,#0f1a2e);">
+
+  <img 
+    src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d"
+    alt="Car Interior"
+    class="w-full h-full object-cover"
+    style="transition: transform 0.5s ease;"
+    onmouseover="this.style.transform='scale(1.05)'"
+    onmouseout="this.style.transform='scale(1)'"
+  />
+
+</div>
+        </div>
+        <div class="mt-4 car-card p-4 flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          </div>
+          <div><div class="text-blue-400 font-bold" style="font-family:'Rajdhani',sans-serif;">2,500+</div><div class="text-gray-400 text-xs">SuperCharger stations placed</div></div>
+        </div>
+      </div>
+      <div class="reveal">
+        <div class="sec-label mb-3">TECHNOLOGY</div>
+        <h2 class="text-3xl md:text-4xl text-white mb-4">Machines With<br/>Future Technology</h2>
+        <p class="text-gray-400 leading-relaxed mb-4 text-sm md:text-base">High-performance electric cars from renowned brands. Futuristic builds and designs with innovative platforms that last a long time.</p>
+        <p class="text-gray-400 leading-relaxed mb-6 text-sm md:text-base">AI-powered performance tuning, over-the-air updates, and advanced driver assistance that learns your style.</p>
+        <div class="space-y-3 mb-6">
+          <div><div class="flex justify-between mb-1"><span class="text-sm text-gray-300">Performance</span><span class="text-sm text-blue-400">95%</span></div><div class="spec-bar"><div class="spec-fill" style="width:95%"></div></div></div>
+          <div><div class="flex justify-between mb-1"><span class="text-sm text-gray-300">Safety Rating</span><span class="text-sm text-blue-400">99%</span></div><div class="spec-bar"><div class="spec-fill" style="width:99%"></div></div></div>
+          <div><div class="flex justify-between mb-1"><span class="text-sm text-gray-300">Efficiency</span><span class="text-sm text-blue-400">88%</span></div><div class="spec-bar"><div class="spec-fill" style="width:88%"></div></div></div>
+        </div>
+        <button class="btn-blue" onclick="showPage('about')">Know More →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- MORE FEATURES -->
+  <section class="py-16 md:py-24 px-4 md:px-12">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-12 reveal">
+        <div class="sec-label mb-2">CAPABILITIES</div>
+        <h2 class="text-4xl md:text-5xl text-white">More Features</h2>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+        <div class="grid grid-cols-2 md:grid-cols-1 gap-4 reveal">
+          <div class="car-card p-5">
+            <div class="text-blue-400 text-2xl mb-1" style="font-family:'Rajdhani',sans-serif;font-weight:700;">800+</div>
+            <div class="text-gray-300 text-sm font-semibold mb-1" style="font-family:'Rajdhani',sans-serif;">Turbo Charging</div>
+            <p class="text-gray-500 text-xs leading-relaxed">Industry-leading charge speed at compatible stations worldwide.</p>
+          </div>
+          <div class="car-card p-5">
+            <div class="text-cyan-400 text-2xl mb-1" style="font-family:'Rajdhani',sans-serif;font-weight:700;">480</div>
+            <div class="text-gray-300 text-sm font-semibold mb-1" style="font-family:'Rajdhani',sans-serif;">Eco Torque</div>
+            <p class="text-gray-500 text-xs leading-relaxed">Sustainable power delivery optimised for real-world efficiency.</p>
+          </div>
+        </div>
+        <div class="feature-ring reveal" style="transition-delay:.1s">
+          <svg viewBox="0 0 200 320" width="120" class="relative z-10">
+            <defs><linearGradient id="tdg" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:#94a3b8"/><stop offset="50%" style="stop-color:#e2e8f0"/><stop offset="100%" style="stop-color:#94a3b8"/></linearGradient></defs>
+            <rect x="30" y="20" width="140" height="280" rx="30" fill="url(#tdg)"/>
+            <rect x="50" y="50" width="100" height="100" rx="8" fill="rgba(191,219,254,.4)" stroke="#3b82f6" stroke-width="1"/>
+            <rect x="50" y="170" width="100" height="100" rx="8" fill="rgba(191,219,254,.2)" stroke="#3b82f6" stroke-width="1" opacity=".5"/>
+            <rect x="28" y="60" width="6" height="40" rx="3" fill="#1e293b" stroke="#3b82f6" stroke-width="1"/>
+            <rect x="166" y="60" width="6" height="40" rx="3" fill="#1e293b" stroke="#3b82f6" stroke-width="1"/>
+            <rect x="28" y="220" width="6" height="40" rx="3" fill="#1e293b" stroke="#3b82f6" stroke-width="1"/>
+            <rect x="166" y="220" width="6" height="40" rx="3" fill="#1e293b" stroke="#3b82f6" stroke-width="1"/>
+            <circle cx="100" cy="155" r="20" fill="rgba(59,130,246,.2)" stroke="#3b82f6" stroke-width="1"/>
+            <circle cx="100" cy="155" r="6" fill="#3b82f6"/>
+          </svg>
+          <div class="f-dot" style="top:10%;left:50%;"></div>
+          <div class="f-dot" style="bottom:15%;right:20%;background:#06b6d4;box-shadow:0 0 10px #06b6d4;"></div>
+          <div class="f-dot" style="top:40%;left:5%;background:#22c55e;box-shadow:0 0 10px #22c55e;"></div>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-1 gap-4 reveal" style="transition-delay:.2s">
+          <div class="car-card p-5">
+            <div class="text-green-400 text-2xl mb-1" style="font-family:'Rajdhani',sans-serif;font-weight:700;">350</div>
+            <div class="text-gray-300 text-sm font-semibold mb-1" style="font-family:'Rajdhani',sans-serif;">EV Range</div>
+            <p class="text-gray-500 text-xs leading-relaxed">Miles on a single charge with premium battery management.</p>
+          </div>
+          <div class="car-card p-5">
+            <div class="text-blue-400 text-2xl mb-1" style="font-family:'Rajdhani',sans-serif;font-weight:700;">4K</div>
+            <div class="text-gray-300 text-sm font-semibold mb-1" style="font-family:'Rajdhani',sans-serif;">Display</div>
+            <p class="text-gray-500 text-xs leading-relaxed">Ultra-high resolution cockpit display for total awareness.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NEWSLETTER -->
+  <section class="py-16 md:py-24 px-4 md:px-12" style="background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+    <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+      <div class="reveal">
+        <h2 class="text-3xl md:text-4xl text-white mb-3">Receive <span style="color:#3b82f6;">Special Offers</span></h2>
+        <p class="text-gray-400 text-sm leading-relaxed">Be the first to know about our new cars and exclusive deals by subscribing to our mailing list.</p>
+      </div>
+      <div class="reveal car-card p-6">
+        <input type="email" placeholder="Enter your email address..." class="mb-3" style="font-size:16px;"/>
+        <button class="btn-blue w-full justify-center" onclick="showNotif('Newsletter subscription confirmed!')">Subscribe Now →</button>
+      </div>
+    </div>
+  </section>
+</div><!-- /home -->
+
+<!-- ═══════════════════════════════ ABOUT PAGE ═══════════════════════════════ -->
+<div id="page-about" class="page">
+<div class="pt-16">
+  <section class="py-16 md:py-24 px-4 md:px-12" style="background:radial-gradient(ellipse at 50% 0%,rgba(59,130,246,.1),transparent 60%),var(--bg);">
+    <div class="max-w-7xl mx-auto text-center">
+      <div class="sec-label mb-3">OUR STORY</div>
+      <h1 style="font-size:clamp(2.8rem,10vw,7rem);color:white;line-height:.95;">About<br/><span style="color:#3b82f6;">Apex Motors</span></h1>
+      <p class="text-gray-400 text-lg max-w-xl mx-auto mt-5 leading-relaxed">Since 2010, we've been at the cutting edge of automotive performance and engineering excellence.</p>
+    </div>
+  </section>
+  <section class="py-16 md:py-20 px-4 md:px-12" style="background:var(--bg2);">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 items-start">
+      <div class="reveal">
+        <div class="sec-label mb-3">MISSION</div>
+        <h2 class="text-3xl md:text-4xl text-white mb-5">Engineering the Future,<br/><span style="color:#3b82f6;">One Car at a Time</span></h2>
+        <div class="space-y-4 text-gray-400 leading-relaxed text-sm md:text-base">
+          <p>Apex Motors was founded with one obsession: to create automobiles that don't just transport — they transform. Every Apex vehicle is an expression of mechanical artistry, blending aerospace technology with visceral performance.</p>
+          <p>Our team of 200+ engineers, designers, and aerodynamicists work from our state-of-the-art facility, where every component is hand-inspected before reaching the chassis.</p>
+          <p>From our debut GT-X coupe to our all-electric Apex Storm concept, we've always been at the frontier. Our racing division has competed in 40+ international endurance events, bringing track lessons into every road car.</p>
+        </div>
+        <div class="flex flex-wrap gap-3 mt-6">
+          <button class="btn-blue" onclick="showPage('popular')">Explore Our Cars</button>
+          <button class="btn-outline" onclick="showPage('contact')">Contact Us</button>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-4 reveal">
+        <div class="car-card p-5 text-center col-span-2"><div class="text-4xl text-blue-400 mb-1" style="font-family:'Rajdhani',sans-serif;font-weight:700;">14+</div><div class="text-gray-400 text-xs tracking-widest">YEARS OF EXCELLENCE</div></div>
+        <div class="car-card p-5 text-center"><div class="text-3xl text-cyan-400 mb-1" style="font-family:'Rajdhani',sans-serif;font-weight:700;">40+</div><div class="text-gray-500 text-xs tracking-widest">RACE ENTRIES</div></div>
+        <div class="car-card p-5 text-center"><div class="text-3xl text-green-400 mb-1" style="font-family:'Rajdhani',sans-serif;font-weight:700;">200+</div><div class="text-gray-500 text-xs tracking-widest">ENGINEERS</div></div>
+        <div class="car-card p-5 text-center"><div class="text-3xl text-blue-400 mb-1" style="font-family:'Rajdhani',sans-serif;font-weight:700;">12</div><div class="text-gray-500 text-xs tracking-widest">MODELS BUILT</div></div>
+        <div class="car-card p-5 text-center"><div class="text-3xl text-cyan-400 mb-1" style="font-family:'Rajdhani',sans-serif;font-weight:700;">98%</div><div class="text-gray-500 text-xs tracking-widest">SATISFACTION</div></div>
+      </div>
+    </div>
+  </section>
+  <!-- Team -->
+  <section class="py-16 md:py-20 px-4 md:px-12">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-10 reveal"><div class="sec-label mb-2">THE PEOPLE</div><h2 class="text-3xl md:text-4xl text-white">Meet Our Team</h2></div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="car-card p-5 text-center reveal"><div class="w-16 h-16 rounded-full mx-auto mb-3 flex items-center justify-center text-2xl" style="background:linear-gradient(135deg,rgba(59,130,246,.3),rgba(6,182,212,.2));border:2px solid rgba(59,130,246,.3);">👨‍🔧</div><h3 class="text-white text-base mb-1">Arjun Mehta</h3><p class="text-gray-500 text-xs">Chief Engineer</p></div>
+        <div class="car-card p-5 text-center reveal" style="transition-delay:.1s"><div class="w-16 h-16 rounded-full mx-auto mb-3 flex items-center justify-center text-2xl" style="background:linear-gradient(135deg,rgba(59,130,246,.3),rgba(6,182,212,.2));border:2px solid rgba(59,130,246,.3);">👩‍💼</div><h3 class="text-white text-base mb-1">Priya Singh</h3><p class="text-gray-500 text-xs">Design Director</p></div>
+        <div class="car-card p-5 text-center reveal" style="transition-delay:.2s"><div class="w-16 h-16 rounded-full mx-auto mb-3 flex items-center justify-center text-2xl" style="background:linear-gradient(135deg,rgba(59,130,246,.3),rgba(6,182,212,.2));border:2px solid rgba(59,130,246,.3);">👨‍💻</div><h3 class="text-white text-base mb-1">Rohan Kapoor</h3><p class="text-gray-500 text-xs">Tech Lead</p></div>
+        <div class="car-card p-5 text-center reveal" style="transition-delay:.3s"><div class="w-16 h-16 rounded-full mx-auto mb-3 flex items-center justify-center text-2xl" style="background:linear-gradient(135deg,rgba(59,130,246,.3),rgba(6,182,212,.2));border:2px solid rgba(59,130,246,.3);">👩‍🔬</div><h3 class="text-white text-base mb-1">Sneha Patel</h3><p class="text-gray-500 text-xs">EV Scientist</p></div>
+      </div>
+    </div>
+  </section>
+  <!-- Timeline (mobile-optimized left-side line) -->
+  <section class="py-16 md:py-20 px-4 md:px-12" style="background:var(--bg2);">
+    <div class="max-w-2xl mx-auto">
+      <div class="text-center mb-10 reveal"><div class="sec-label mb-2">HISTORY</div><h2 class="text-3xl md:text-4xl text-white">Our Journey</h2></div>
+      <div class="relative pl-10">
+        <div class="tl-line"></div>
+        <div class="space-y-8">
+          <div class="reveal relative"><div class="tl-dot absolute -left-10 top-1" style="margin-left:13px;"></div><div class="car-card p-5"><div class="text-blue-400 text-lg mb-1" style="font-family:'Rajdhani',sans-serif;font-weight:700;">2010 — Founded</div><p class="text-gray-400 text-sm">Apex Motors established in Mumbai with a team of 5 passionate engineers.</p></div></div>
+          <div class="reveal relative"><div class="tl-dot absolute -left-10 top-1" style="margin-left:13px;"></div><div class="car-card p-5"><div class="text-cyan-400 text-lg mb-1" style="font-family:'Rajdhani',sans-serif;font-weight:700;">2014 — First Race Win</div><p class="text-gray-400 text-sm">GT-X prototype wins its first endurance race at the Buddh Circuit.</p></div></div>
+          <div class="reveal relative"><div class="tl-dot absolute -left-10 top-1" style="margin-left:13px;"></div><div class="car-card p-5"><div class="text-green-400 text-lg mb-1" style="font-family:'Rajdhani',sans-serif;font-weight:700;">2019 — EV Launch</div><p class="text-gray-400 text-sm">Project Storm — India's first 1,000kW electric supercar — unveiled at Auto Expo.</p></div></div>
+          <div class="reveal relative"><div class="tl-dot absolute -left-10 top-1" style="margin-left:13px;"></div><div class="car-card p-5"><div class="text-blue-400 text-lg mb-1" style="font-family:'Rajdhani',sans-serif;font-weight:700;">2024 — Global Expansion</div><p class="text-gray-400 text-sm">Apex opens showrooms in 12 cities and launches the GT-X Series 3.</p></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+</div><!-- /about -->
+
+<!-- ═══════════════════════════════ POPULAR PAGE ═══════════════════════════════ -->
+<div id="page-popular" class="page">
+<div class="pt-16">
+  <section class="py-16 md:py-24 px-4 md:px-12">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-10 reveal">
+        <div class="sec-label mb-2">INVENTORY</div>
+        <h1 class="text-4xl md:text-6xl text-white">Popular <span style="color:#3b82f6;">Cars</span></h1>
+        <p class="text-gray-400 mt-3 text-sm">Filter by brand and find your perfect match.</p>
+      </div>
+      <!-- Scrollable filter row -->
+      <div class="filter-scroll mb-6">
+        <button class="brand-btn active flex-shrink-0" onclick="filterCars('all',this)">All</button>
+        <button class="brand-btn flex-shrink-0" onclick="filterCars('porsche',this)">Porsche</button>
+        <button class="brand-btn flex-shrink-0" onclick="filterCars('tesla',this)">Tesla</button>
+        <button class="brand-btn flex-shrink-0" onclick="filterCars('bmw',this)">BMW</button>
+        <button class="brand-btn flex-shrink-0" onclick="filterCars('lamborghini',this)">Lamborghini</button>
+        <button class="brand-btn flex-shrink-0" onclick="filterCars('ferrari',this)">Ferrari</button>
+        <button class="brand-btn flex-shrink-0" onclick="filterCars('audi',this)">Audi</button>
+      </div>
+      <div id="popular-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"></div>
+    </div>
+  </section>
+</div>
+</div><!-- /popular -->
+
+<!-- ═══════════════════════════════ FEATURED PAGE ═══════════════════════════════ -->
+<div id="page-featured" class="page">
+<div class="pt-16">
+  <section class="py-16 md:py-24 px-4 md:px-12">
+    <div class="max-w-7xl mx-auto">
+      <div class="mb-10 reveal">
+        <div class="sec-label mb-2">HANDPICKED</div>
+        <h1 class="text-4xl md:text-6xl text-white mb-4">Featured <span style="color:#3b82f6;">Luxury</span> Cars</h1>
+        <!-- Scrollable tabs -->
+        <div class="filter-scroll">
+          <button class="tab-btn active flex-shrink-0" onclick="setFeaturedTab('all',this)">All</button>
+          <button class="tab-btn flex-shrink-0" onclick="setFeaturedTab('electric',this)">Electric</button>
+          <button class="tab-btn flex-shrink-0" onclick="setFeaturedTab('sport',this)">Sport</button>
+          <button class="tab-btn flex-shrink-0" onclick="setFeaturedTab('luxury',this)">Luxury</button>
+        </div>
+      </div>
+      <div id="featured-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"></div>
+      <!-- Wishlist -->
+      <div class="mt-12 reveal">
+        <div class="sec-label mb-3">MY WISHLIST</div>
+        <div id="wishlist-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3"></div>
+        <p id="wishlist-empty" class="text-gray-500 text-sm mt-3">No cars saved yet. Tap the ♡ on any car to save it.</p>
+      </div>
+    </div>
+  </section>
+</div>
+</div><!-- /featured -->
+
+<!-- ═══════════════════════════════ BLOG PAGE ═══════════════════════════════ -->
+<div id="page-blog" class="page">
+<div class="pt-16">
+  <section class="py-16 md:py-24 px-4 md:px-12">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-10 reveal">
+        <div class="sec-label mb-2">INSIGHTS</div>
+        <h1 class="text-4xl md:text-6xl text-white">The <span style="color:#3b82f6;">Blog</span></h1>
+      </div>
+      <!-- Featured post -->
+      <div class="news-card mb-6 reveal">
+        <div style="height:180px;background:linear-gradient(135deg,#0d1a2e,#0a0f1a);display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:12px;">
+  
+  <img 
+    src="https://images.unsplash.com/photo-1549924231-f129b911e442"
+    alt="Car"
+    style="width:100%;height:100%;object-fit:cover;transition:transform 0.5s ease;"
+    onmouseover="this.style.transform='scale(1.08)'"
+    onmouseout="this.style.transform='scale(1)'"
+  />
+
+</div>
+        <div class="p-5 md:p-8">
+          <div class="flex flex-wrap gap-2 mb-3"><span class="badge">PERFORMANCE</span><span class="text-gray-500 text-xs">March 28, 2024</span></div>
+          <h2 class="text-2xl md:text-3xl text-white mb-3">The Science Behind the GT-X Engine</h2>
+          <p class="text-gray-400 text-sm leading-relaxed mb-4">Our engineers spent 3 years developing the twin-turbo V8. Here's a deep dive into combustion geometry, turbo lag elimination, and how we extracted 650HP from a 4.0L block.</p>
+          <div class="flex items-center justify-between"><span class="text-gray-500 text-xs">8 MIN READ</span><button class="btn-blue text-sm py-2 px-4">Read →</button></div>
+        </div>
+      </div>
+      <div id="blog-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"></div>
+    </div>
+  </section>
+</div>
+</div><!-- /blog -->
+
+<!-- ═══════════════════════════════ CONTACT PAGE ═══════════════════════════════ -->
+<div id="page-contact" class="page">
+<div class="pt-16 min-h-screen">
+  <section class="py-16 md:py-24 px-4 md:px-12">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-10 reveal">
+        <div class="sec-label mb-2">GET IN TOUCH</div>
+        <h1 class="text-4xl md:text-6xl text-white">Contact <span style="color:#3b82f6;">Us</span></h1>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="car-card p-6 md:p-8 reveal">
+          <h3 class="text-2xl text-white mb-5">Request a Quote</h3>
+          <div class="space-y-3">
+            <div class="grid grid-cols-2 gap-3"><input placeholder="First Name" style="font-size:16px;"/><input placeholder="Last Name" style="font-size:16px;"/></div>
+            <input type="email" placeholder="Email Address" style="font-size:16px;"/>
+            <input type="tel" placeholder="Phone Number" style="font-size:16px;"/>
+            <select style="font-size:16px;"><option value="">Select a Car Model</option><option>Porsche Taycan Turbo S</option><option>Tesla Model S Plaid</option><option>BMW M3 Competition</option><option>Lamborghini Huracán</option><option>Ferrari 488 GTB</option><option>Audi R8 V10</option></select>
+            <textarea rows="4" placeholder="Additional requirements..." style="font-size:16px;resize:none;"></textarea>
+            <button class="btn-blue w-full justify-center" onclick="showNotif('Quote request sent! We\'ll contact you shortly.')">Submit Request →</button>
+          </div>
+        </div>
+        <div class="space-y-4 reveal">
+          <div class="car-card p-5"><div class="flex items-start gap-3"><div class="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center flex-shrink-0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div><div><h4 class="text-white font-semibold text-sm mb-1">Showroom</h4><p class="text-gray-400 text-xs">88 Circuit Drive, Performance Quarter,<br/>Mumbai, Maharashtra 400001</p></div></div></div>
+          <div class="car-card p-5"><div class="flex items-start gap-3"><div class="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center flex-shrink-0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13.6 19.79 19.79 0 0 1 1.61 5.07 2 2 0 0 1 3.57 3h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 10.5a16 16 0 0 0 6 6l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.5 18l.42 1.42a2 2 0 0 1-1.92 2.5z"/></svg></div><div><h4 class="text-white font-semibold text-sm mb-1">Phone</h4><p class="text-gray-400 text-xs">+91 98765 43210</p><p class="text-gray-400 text-xs">Mon–Sat 9am–7pm IST</p></div></div></div>
+          <div class="car-card p-5"><div class="flex items-start gap-3"><div class="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center flex-shrink-0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><div><h4 class="text-white font-semibold text-sm mb-1">Email</h4><p class="text-gray-400 text-xs">hello@apexmotors.in</p><p class="text-gray-400 text-xs">sales@apexmotors.in</p></div></div></div>
+          <div class="car-card p-5">
+            <h4 class="text-white font-semibold text-sm mb-3">Business Hours</h4>
+            <div class="space-y-2">
+              <div class="flex justify-between text-xs"><span class="text-gray-400">Mon – Fri</span><span class="text-blue-400">9:00 AM – 7:00 PM</span></div>
+              <div class="flex justify-between text-xs"><span class="text-gray-400">Saturday</span><span class="text-blue-400">10:00 AM – 5:00 PM</span></div>
+              <div class="flex justify-between text-xs"><span class="text-gray-400">Sunday</span><span class="text-gray-500">Closed</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+</div><!-- /contact -->
+
+<!-- FOOTER -->
+<footer class="px-4 md:px-12 py-12">
+  <div class="max-w-7xl mx-auto">
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-6 mb-10">
+      <div class="col-span-2">
+        <div class="flex items-center gap-2 mb-3">
+          <svg width="24" height="24" viewBox="0 0 32 32"><polygon points="16,3 29,27 3,27" fill="none" stroke="#3b82f6" stroke-width="2"/><polygon points="16,9 24,24 8,24" fill="#3b82f6" opacity=".3"/></svg>
+          <span style="font-family:'Rajdhani',sans-serif;font-size:1.2rem;font-weight:700;color:white;">APEX<span style="color:#3b82f6;">MOTORS</span></span>
+        </div>
+        <p class="text-gray-500 text-xs leading-relaxed max-w-xs">We offer the best electric cars of the most recognised brands in the world.</p>
+        <div class="flex gap-2 mt-4">
+          <div class="w-8 h-8 rounded-full border border-gray-700 flex items-center justify-center"><svg width="12" height="12" viewBox="0 0 24 24" fill="#64748b"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></div>
+          <div class="w-8 h-8 rounded-full border border-gray-700 flex items-center justify-center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/></svg></div>
+          <div class="w-8 h-8 rounded-full border border-gray-700 flex items-center justify-center"><svg width="12" height="12" viewBox="0 0 24 24" fill="#64748b"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/></svg></div>
+        </div>
+      </div>
+      <div>
+        <h4 class="text-white font-semibold mb-3 text-sm" style="font-family:'Rajdhani',sans-serif;">Company</h4>
+        <div class="space-y-2">
+          <a class="block text-gray-500 text-xs hover:text-blue-400 transition-colors" onclick="showPage('about')">About</a>
+          <a class="block text-gray-500 text-xs hover:text-blue-400 transition-colors" onclick="showPage('blog')">Blog</a>
+          <a class="block text-gray-500 text-xs hover:text-blue-400 transition-colors">Careers</a>
+          <a class="block text-gray-500 text-xs hover:text-blue-400 transition-colors" onclick="showPage('popular')">Shop</a>
+        </div>
+      </div>
+      <div>
+        <h4 class="text-white font-semibold mb-3 text-sm" style="font-family:'Rajdhani',sans-serif;">Information</h4>
+        <div class="space-y-2">
+          <a class="block text-gray-500 text-xs hover:text-blue-400 transition-colors" onclick="showPage('contact')">Get a Quote</a>
+          <a class="block text-gray-500 text-xs hover:text-blue-400 transition-colors">Find a Dealer</a>
+          <a class="block text-gray-500 text-xs hover:text-blue-400 transition-colors" onclick="showPage('contact')">Contact Us</a>
+          <a class="block text-gray-500 text-xs hover:text-blue-400 transition-colors">Services</a>
+        </div>
+      </div>
+      <div>
+        <h4 class="text-white font-semibold mb-3 text-sm" style="font-family:'Rajdhani',sans-serif;">Follow Us</h4>
+        <div class="space-y-2">
+          <a class="block text-gray-500 text-xs hover:text-blue-400 transition-colors">Facebook</a>
+          <a class="block text-gray-500 text-xs hover:text-blue-400 transition-colors">Instagram</a>
+          <a class="block text-gray-500 text-xs hover:text-blue-400 transition-colors">Twitter / X</a>
+          <a class="block text-gray-500 text-xs hover:text-blue-400 transition-colors">YouTube</a>
+        </div>
+      </div>
+    </div>
+    <div class="border-t border-gray-800 pt-5 flex flex-col sm:flex-row justify-between items-center gap-3">
+      <p class="text-gray-600 text-xs">© 2024 Apex Motors. All Rights Reserved.</p>
+      <p class="text-gray-700 text-xs">Crafted with precision for performance enthusiasts.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ===== DATA =====
+const cars=[
+  {id:1,brand:"porsche",model:"Porsche",variant:"Taycan Turbo S",price:"$150,900",acc:"3.7s",speed:"316 km/h",range:"Electric",type:"electric",featured:true,category:"electric"},
+  {id:2,brand:"porsche",model:"Porsche",variant:"Boxster GTS",price:"$125,900",acc:"3.7s",speed:"306 km/h",range:"Petrol",type:"sport",featured:true,category:"sport"},
+  {id:3,brand:"porsche",model:"Porsche",variant:"Cayman GT4",price:"$128,900",acc:"3.7s",speed:"316 km/h",range:"Petrol",type:"sport",featured:false,category:"sport"},
+  {id:4,brand:"tesla",model:"Tesla",variant:"Model X",price:"$98,900",acc:"2.6s",speed:"262 km/h",range:"560 km",type:"electric",featured:true,category:"electric"},
+  {id:5,brand:"tesla",model:"Tesla",variant:"Model S Plaid",price:"$45,900",acc:"2.9s",speed:"322 km/h",range:"628 km",type:"electric",featured:true,category:"electric"},
+  {id:6,brand:"audi",model:"Audi",variant:"E-tron GT",price:"$175,900",acc:"3.3s",speed:"245 km/h",range:"487 km",type:"electric",featured:true,category:"luxury"},
+  {id:7,brand:"porsche",model:"Porsche",variant:"Boxster 987",price:"$126,900",acc:"4.1s",speed:"290 km/h",range:"Petrol",type:"sport",featured:false,category:"sport"},
+  {id:8,brand:"porsche",model:"Porsche",variant:"Panamera",price:"$126,900",acc:"3.6s",speed:"298 km/h",range:"Hybrid",type:"luxury",featured:false,category:"luxury"},
+  {id:9,brand:"bmw",model:"BMW",variant:"M3 Competition",price:"$89,900",acc:"3.9s",speed:"290 km/h",range:"Petrol",type:"sport",featured:false,category:"sport"},
+  {id:10,brand:"lamborghini",model:"Lamborghini",variant:"Huracán EVO",price:"$265,900",acc:"2.9s",speed:"325 km/h",range:"Petrol",type:"sport",featured:false,category:"sport"},
+  {id:11,brand:"ferrari",model:"Ferrari",variant:"488 GTB",price:"$295,900",acc:"3.0s",speed:"330 km/h",range:"Petrol",type:"sport",featured:false,category:"sport"},
+  {id:12,brand:"audi",model:"Audi",variant:"R8 V10 Plus",price:"$189,900",acc:"3.2s",speed:"320 km/h",range:"Petrol",type:"sport",featured:false,category:"luxury"},
+];
+const blogPosts=[
+  {tag:"TRACK DAY",date:"April 10, 2024",title:"24 Hours at Nürburgring: Inside Our Race Team",excerpt:"We embedded with our factory team during the 24H Nürburgring. The cold, the strategy, the mechanical drama — pushing a car to the limit for a full day.",time:"12 MIN READ"},
+  {tag:"FUTURE TECH",date:"April 22, 2024",title:"Project Storm: Building the World's Fastest EV",excerpt:"The Apex Storm targets sub-2.5 second 0-100 times with a 1,000kW quad-motor system without sacrificing driver engagement.",time:"10 MIN READ"},
+  {tag:"GUIDE",date:"May 5, 2024",title:"How to Choose Your First Supercar in 2024",excerpt:"Budget, maintenance, insurance, track vs. road — our guide for first-time supercar buyers navigating a complex market.",time:"15 MIN READ"},
+];
+const wishlist=new Set();
+
+// ===== CAR SVG =====
+function carImage(brand, variant){
+  const images = {
+    porsche: {
+      "911": "https://images.unsplash.com/photo-1503376780353-7e6692767b70",
+      "taycan": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRfbP8O6NtH5WCdyUP6NiLgYxcERrU2giezDg&s",
+      "boxster gts": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT-2-8m1hEAjQj6lnoSVT8IKuVt-eCZat5t5Q&s",
+      "cayman": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSf8ILYQpzXKNM_SdtnLzkCK5J2FPyzWxtH4Q&s",
+      "boxster 987": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ2KY6hYK_V5WK4pt8kz6zm-KoziHmUqvAYDQ&s",
+      default: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRJjRE2JwTqaZ2Gz7sHvbIvmYfEqs5XatLAeg&s"
+    },
+    tesla: {
+      "model s": "https://images.unsplash.com/photo-1617788138017-80ad40651399",
+      "model 3": "https://images.unsplash.com/photo-1560958089-b8a1929cea89",
+      default: "https://img.freepik.com/free-photo/moving-black-car-road_1268-21988.jpg"
+    },
+    bmw: {
+      "m3": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQjg3nnQmBhHcLPvq3xiGxq30PIITBTa3bb7g&s",
+      "i8": "https://images.unsplash.com/photo-1542362567-b07e54358753",
+      default: "https://images.unsplash.com/photo-1555215695-3004980ad54c"
+    },
+    lamborghini: {
+      "huracan": "https://images.unsplash.com/photo-1511919884226-fd3cad34687c",
+      "aventador": "https://images.unsplash.com/photo-1544829099-b9a0c5303bea",
+      default: "https://images.unsplash.com/photo-1511919884226-fd3cad34687c"
+    },
+    ferrari: {
+      "488": "https://images.unsplash.com/photo-1583121274602-3e2820c69888",
+      "sf90": "https://images.unsplash.com/photo-1592194996308-7b43878e84a6",
+      default: "https://images.unsplash.com/photo-1583121274602-3e2820c69888"
+    },
+    audi: {
+      "r8": "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6",
+      "e-tron": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGndsHP5y7wKkggDEYHquOq4O5KZHpyYUpTg&s",
+      default: "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6"
+    }
+  };
+
+  const v = variant.toLowerCase();
+  const brandImages = images[brand] || {};
+
+  // find matching variant keyword
+  let img = brandImages.default;
+  for (let key in brandImages) {
+    if (v.includes(key)) {
+      img = brandImages[key];
+      break;
+    }
+  }
+
+  return `
+    <img 
+      src="${img}" 
+      alt="${brand} ${variant}"
+      style="width:100%;height:120px;object-fit:cover;border-radius:10px;transition:transform 0.4s ease;"
+      onmouseover="this.style.transform='scale(1.08)'"
+      onmouseout="this.style.transform='scale(1)'"
+    />
+  `;
+}
+
+// ===== CAR CARD =====
+function renderCar(car){
+  const inWL=wishlist.has(car.id);
+  return`<div class="car-card">
+    <div style="background:linear-gradient(135deg,#0d1a2e,#060c18);padding:1.25rem 1rem;position:relative;">
+      <button onclick="toggleWishlist(${car.id},'${car.model} ${car.variant}')"
+        style="position:absolute;top:.625rem;right:.625rem;width:32px;height:32px;border-radius:50%;border:1px solid rgba(59,130,246,.3);display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.4);transition:all .2s;touch-action:manipulation;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="${inWL?"#ef4444":"none"}" stroke="${inWL?"#ef4444":"#94a3b8"}" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      </button>
+      ${carImage(car.brand, car.variant)}
+    </div>
+    <div class="p-4">
+      <div class="flex justify-between items-start mb-2">
+        <div><h3 style="font-family:'Rajdhani',sans-serif;font-size:1.1rem;font-weight:700;color:white;">${car.model}</h3><p style="font-size:.75rem;color:#64748b;font-family:'Rajdhani',sans-serif;">${car.variant}</p></div>
+        <span class="badge">${car.type.toUpperCase()}</span>
+      </div>
+      <div class="grid grid-cols-3 gap-1 mb-3 text-center">
+        <div><p style="font-size:.6rem;color:#64748b;letter-spacing:.08em;font-family:'Rajdhani',sans-serif;">0-100</p><p style="font-size:.8rem;color:#e2e8f0;font-family:'Rajdhani',sans-serif;font-weight:600;">${car.acc}</p></div>
+        <div><p style="font-size:.6rem;color:#64748b;letter-spacing:.08em;font-family:'Rajdhani',sans-serif;">TOP SPD</p><p style="font-size:.8rem;color:#e2e8f0;font-family:'Rajdhani',sans-serif;font-weight:600;">${car.speed}</p></div>
+        <div><p style="font-size:.6rem;color:#64748b;letter-spacing:.08em;font-family:'Rajdhani',sans-serif;">RANGE</p><p style="font-size:.8rem;color:#e2e8f0;font-family:'Rajdhani',sans-serif;font-weight:600;">${car.range}</p></div>
+      </div>
+      <div class="flex justify-between items-center">
+        <span style="font-family:'Rajdhani',sans-serif;font-size:1.2rem;font-weight:700;color:#3b82f6;">${car.price}</span>
+        <button class="btn-blue" style="font-size:.8rem;padding:.45rem .9rem;" onclick="showNotif('Quote requested for ${car.model} ${car.variant}!')">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ===== RENDERS =====
+function renderHomeGrid(){document.getElementById('home-cars-grid').innerHTML=cars.slice(0,6).map(c=>renderCar(c)).join('');}
+function renderPopularGrid(brand='all'){
+  const f=brand==='all'?cars:cars.filter(c=>c.brand===brand);
+  document.getElementById('popular-grid').innerHTML=f.map(c=>renderCar(c)).join('');
+}
+function renderFeaturedGrid(cat='all'){
+  const f=cat==='all'?cars.filter(c=>c.featured):cars.filter(c=>c.featured&&c.category===cat);
+  document.getElementById('featured-grid').innerHTML=f.map(c=>renderCar(c)).join('');
+}
+function renderBlogGrid(){
+  document.getElementById('blog-grid').innerHTML=blogPosts.map(p=>`
+    <div class="news-card">
+      <div style="height:120px;background:linear-gradient(135deg,#0d1626,#0a0f1a);display:flex;align-items:center;justify-content:center;">
+        <div style="font-family:'Rajdhani',sans-serif;font-size:2.5rem;font-weight:700;color:rgba(59,130,246,.15);">${p.tag.split(' ')[0]}</div>
+      </div>
+      <div class="p-5">
+        <div class="flex flex-wrap gap-2 mb-2"><span class="badge">${p.tag}</span><span style="font-size:.7rem;color:#64748b;">${p.date}</span></div>
+        <h3 style="font-family:'Rajdhani',sans-serif;font-size:1.1rem;color:white;margin-bottom:.5rem;">${p.title}</h3>
+        <p style="color:#64748b;font-size:.8rem;line-height:1.5;margin-bottom:.875rem;">${p.excerpt}</p>
+        <div class="flex justify-between items-center"><span style="color:#475569;font-size:.7rem;">${p.time}</span><span style="color:#3b82f6;font-size:.8rem;font-family:'Rajdhani',sans-serif;font-weight:600;">READ →</span></div>
+      </div>
+    </div>
+  `).join('');
+}
+function renderWishlist(){
+  const wlCars=cars.filter(c=>wishlist.has(c.id));
+  const el=document.getElementById('wishlist-grid'),empty=document.getElementById('wishlist-empty');
+  if(wlCars.length===0){el.innerHTML='';empty.style.display='block';}
+  else{
+    empty.style.display='none';
+    el.innerHTML=wlCars.map(c=>`<div class="car-card p-4"><div style="font-size:.65rem;color:#64748b;font-family:'Rajdhani',sans-serif;">${c.model}</div><div style="font-family:'Rajdhani',sans-serif;font-weight:700;color:white;font-size:.95rem;">${c.variant}</div><div style="color:#3b82f6;font-family:'Rajdhani',sans-serif;font-weight:600;font-size:.9rem;">${c.price}</div></div>`).join('');
+  }
+  const n=wishlist.size;
+  document.getElementById('wishlist-count').textContent=n;
+  document.getElementById('wishlist-count-m').textContent=n;
+}
+
+// ===== WISHLIST =====
+function toggleWishlist(id,name){
+  if(wishlist.has(id)){wishlist.delete(id);showNotif('Removed from wishlist');}
+  else{wishlist.add(id);showNotif('Saved: '+name);}
+  renderFeaturedGrid(currentFeaturedCat);
+  renderWishlist();
+}
+
+// ===== FILTERS =====
+function filterCars(brand,el){
+  document.querySelectorAll('.brand-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');renderPopularGrid(brand);
+}
+let currentFeaturedCat='all';
+function setFeaturedTab(cat,el){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');currentFeaturedCat=cat;renderFeaturedGrid(cat);
+}
+
+// ===== PAGE ROUTING =====
+const pages=['home','about','popular','featured','blog','contact'];
+function showPage(name){
+  pages.forEach(p=>{
+    document.getElementById('page-'+p).classList.remove('active');
+    const n=document.getElementById('nav-'+p);if(n)n.classList.remove('active');
+    const mn=document.getElementById('mnav-'+p);if(mn)mn.classList.remove('active');
+  });
+  document.getElementById('page-'+name).classList.add('active');
+  const n=document.getElementById('nav-'+name);if(n)n.classList.add('active');
+  const mn=document.getElementById('mnav-'+name);if(mn)mn.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+  setTimeout(initReveal,100);
+}
+
+// ===== MOBILE MENU =====
+function openMobileMenu(){
+  document.getElementById('mobileMenu').classList.add('open');
+  document.getElementById('hamburger').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeMobileMenu(){
+  document.getElementById('mobileMenu').classList.remove('open');
+  document.getElementById('hamburger').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+// ===== NOTIFICATION =====
+function showNotif(msg){
+  document.getElementById('notif-msg').textContent=msg;
+  const n=document.getElementById('notif');n.classList.add('show');
+  setTimeout(()=>n.classList.remove('show'),3000);
+}
+
+// ===== SCROLL REVEAL =====
+let revealObs;
+function initReveal(){
+  const els=document.querySelectorAll('.reveal:not(.vis)');
+  if(revealObs)revealObs.disconnect();
+  revealObs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('vis');});},{threshold:.06});
+  els.forEach(el=>revealObs.observe(el));
+}
+
+// ===== SCROLL TOP =====
+window.addEventListener('scroll',()=>{document.getElementById('scrollTop').style.opacity=window.scrollY>300?'1':'0';});
+
+// ===== DESKTOP CURSOR =====
+const cur=document.getElementById('cur'),cur2=document.getElementById('cur2');
+if(window.matchMedia('(pointer:fine)').matches){
+  document.addEventListener('mousemove',e=>{
+    cur.style.left=e.clientX+'px';cur.style.top=e.clientY+'px';
+    setTimeout(()=>{cur2.style.left=e.clientX+'px';cur2.style.top=e.clientY+'px';},60);
+  });
+}
+
+// ===== INIT =====
+renderHomeGrid();renderPopularGrid();renderFeaturedGrid();renderBlogGrid();renderWishlist();
+initReveal();
+</script>
+</body>
+</html>
